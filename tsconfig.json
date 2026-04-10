@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "ES2023", // target JS
+    "outDir": "./dist", // thư mục build
+    "rootDir": "./src", // thư mục nguồn
+    "esModuleInterop": true, // hỗ trợ import CJS
+    "strict": true, // bật tất cả strict type-check
+    "skipLibCheck": true, // bỏ qua type check .d.ts của thư viện
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true, // bật decorators (TypeORM cần)
+    "emitDecoratorMetadata": true,
+    "paths": {
+      // alias ~
+      "~/*": ["./src/*"]
+    },
+    "types": ["node"] // để nhận Node types
+  },
+  "include": ["src/**/*"], // include tất cả file ts trong src
+  "exclude": ["dist", "node_modules"] // loại bỏ folder không cần thiết
+}
