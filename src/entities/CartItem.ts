@@ -1,10 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index, JoinColumn } from 'typeorm'
 import { Cart } from '~/entities/Cart'
 import { ProductVariant } from '~/entities/ProductVariant'
+import { Base } from '~/entities/Base'
 
 @Entity()
 @Index(['cart', 'variant'], { unique: true })
-export class CartItem {
+export class CartItem extends Base {
   @PrimaryGeneratedColumn('uuid')
   cart_item_id!: string
 

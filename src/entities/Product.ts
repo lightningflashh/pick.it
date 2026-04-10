@@ -1,9 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Index, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  Index,
+  JoinColumn
+} from 'typeorm'
 import { Category } from '~/entities/Category'
 import { ProductVariant } from '~/entities/ProductVariant'
+import { Base } from '~/entities/Base'
 
 @Entity()
-export class Product {
+export class Product extends Base {
   @PrimaryGeneratedColumn('uuid')
   product_id!: string
 
@@ -29,17 +38,4 @@ export class Product {
 
   @OneToMany(() => ProductVariant, (v) => v.product)
   variants!: ProductVariant[]
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
-  })
-  created_at!: Date
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP'
-  })
-  updated_at!: Date
 }

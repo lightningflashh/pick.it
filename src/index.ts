@@ -7,10 +7,16 @@ import { CONNECT_POSTGRESQL_DB } from '~/config/postgresql'
 
 // MongoDB
 import { CONNECT_DB } from '~/config/mongodb'
+import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
+import { APIs_V1 } from './routes/v1'
 
 const app = express()
 
 app.use(express.json())
+
+app.use('/api/v1', APIs_V1)
+
+app.use(errorHandlingMiddleware)
 
 const START_SERVER = () => {
   app.listen(Number(env.LOCAL_DEV_APP_PORT), env.LOCAL_DEV_APP_HOST || 'localhost', () => {

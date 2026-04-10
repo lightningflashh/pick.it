@@ -27,7 +27,7 @@ export const CONNECT_POSTGRESQL_DB = async (): Promise<DataSource> => {
       type: 'postgres',
       url: env.POSTGRES_URI,
 
-      synchronize: false,
+      synchronize: true,
       logging: false,
 
       entities: [

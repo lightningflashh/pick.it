@@ -1,10 +1,20 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, Index, UpdateDateColumn, CreateDateColumn } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  OneToOne,
+  Index,
+  UpdateDateColumn,
+  CreateDateColumn
+} from 'typeorm'
 import { RoleType } from '~/entities/role.enum'
 import { Order } from '~/entities/Order'
 import { Cart } from '~/entities/Cart'
+import { Base } from '~/entities/Base'
 
 @Entity()
-export class User {
+export class User extends Base {
   @PrimaryGeneratedColumn('uuid')
   user_id!: string
 
@@ -38,17 +48,4 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders!: Order[]
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
-  })
-  created_at!: Date
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP'
-  })
-  updated_at!: Date
 }

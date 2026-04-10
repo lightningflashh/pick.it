@@ -5,23 +5,22 @@ import {
   ManyToOne,
   OneToMany,
   Index,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn
+  JoinColumn
 } from 'typeorm'
 
 import { User } from './User'
 import { OrderItem } from '~/entities/OrderItem'
 import { OrderCoupon } from '~/entities/OrderCoupon'
-import { OrderStatusType } from '~/entities/order-status.enum'
-import { PaymentStatusType } from '~/entities/payment-status.enum'
+import { OrderStatusType } from '~/entities/orderStatus.enum'
+import { PaymentStatusType } from '~/entities/paymentStatus.enum'
+import { Base } from '~/entities/Base'
 
 @Entity()
 @Index(['user'])
 @Index(['status'])
 @Index(['payment_status'])
 @Index(['user', 'status', 'payment_status'])
-export class Order {
+export class Order extends Base {
   @PrimaryGeneratedColumn('uuid')
   order_id!: string
 
@@ -59,17 +58,4 @@ export class Order {
 
   @OneToMany(() => OrderCoupon, (oc) => oc.order)
   coupons!: OrderCoupon[]
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
-  })
-  created_at!: Date
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP'
-  })
-  updated_at!: Date
 }

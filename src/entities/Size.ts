@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm'
 import { ProductVariant } from '~/entities/ProductVariant'
+import { Base } from '~/entities/Base'
 
 @Entity()
-export class Size {
+export class Size extends Base {
   @PrimaryGeneratedColumn()
   size_id!: number
 
