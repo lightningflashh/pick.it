@@ -8,9 +8,15 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "prettier": "prettier --check .",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write .",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migration:generate": "yarn typeorm migration:generate -d src/config/data-source.ts",
+    "migration:run": "yarn typeorm migration:run -d src/config/data-source.ts",
+    "migration:revert": "yarn typeorm migration:revert -d src/config/data-source.ts"
   },
   "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "express": "^5.2.1",
     "http-status-codes": "^2.3.0",
     "mongodb": "^7.1.1",

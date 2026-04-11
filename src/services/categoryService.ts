@@ -7,8 +7,8 @@ const create = (data: Partial<Category>) => {
   return getRepo().create(data)
 }
 
-const save = (category: Category) => {
-  return getRepo().save(category)
+const save = (id: string, data: Partial<Category>) => {
+  return getRepo().save({ ...data, category_id: parseInt(id) } as Category)
 }
 
 const findAll = () => {
@@ -27,11 +27,11 @@ const findByNameOrSlug = (name: string, slug: string) => {
   })
 }
 
-const remove = (category: Category) => {
-  return getRepo().remove(category)
+const remove = (id: string) => {
+  return getRepo().remove({ category_id: parseInt(id) } as Category)
 }
 
-export const categoryRepository = {
+export const categoryService = {
   create,
   save,
   findAll,

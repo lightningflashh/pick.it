@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { categoryService } from '~/services/category.service'
+import { categoryService } from '~/services/categoryService'
 
 const createNew = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await categoryService.createNew(req.body)
+    const result = await categoryService.create(req.body)
 
     res.status(StatusCodes.CREATED).json({
       message: 'Category created successfully',
@@ -41,7 +41,7 @@ const getById = async (req: Request, res: Response, next: NextFunction) => {
 
 const update = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await categoryService.update(req.params.id as string, req.body)
+    const result = await categoryService.save(req.params.id as string, req.body)
 
     res.status(StatusCodes.OK).json({
       message: 'Updated successfully',
