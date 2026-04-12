@@ -5,16 +5,12 @@ import { validateDto } from '~/validation/ValidateDto'
 
 const Router = express.Router()
 
-Router.route('/register')
-  .post(validateDto(CreateUserDto), userController.createNew)
+Router.route('/register').post(validateDto(CreateUserDto), userController.createNew)
 
-Router.route('/login')
-  .post(userController.login)
+Router.route('/login').post(userController.login)
 
-Router.route('/logout')
-  .delete(userController.logout)
+Router.route('/logout').delete(userController.logout)
 
-Router.route('/refresh-token')
-  .get(userController.refreshToken)
+Router.route('/refresh-token').get(userController.refreshToken)
 
 export const userRoute = Router

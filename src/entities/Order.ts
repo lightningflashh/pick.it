@@ -1,12 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  OneToMany,
-  Index,
-  JoinColumn
-} from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Index, JoinColumn } from 'typeorm'
 
 import { User } from './User'
 import { OrderItem } from '~/entities/OrderItem'

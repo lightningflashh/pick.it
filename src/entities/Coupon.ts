@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index, UpdateDateColumn, CreateDateColumn } from 'typeorm'
-import { DiscountType } from '~/entities/discounType.enum'
+import { DiscountType } from '~/entities/discountType.enum'
 import { Base } from '~/entities/Base'
 
 @Entity()

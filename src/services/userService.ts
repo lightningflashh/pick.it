@@ -5,7 +5,7 @@ import ApiError from '~/utils/ApiError'
 import bcrypt from 'bcryptjs'
 import { JwtProvider } from '~/providers/JwtProvider'
 import { env } from '~/config/environment'
-import { TokenPayload } from '~/types/auth/tokenPayload'
+import { TokenPayload } from '~/types/Auth/tokenPayload'
 
 const getRepo = () => GET_POSTGRESQL_DB().getRepository(User)
 
@@ -56,10 +56,7 @@ const login = async (reqBody: any) => {
     throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Account not active')
   }
 
-  const isMatch = bcrypt.compareSync(
-    reqBody.password,
-    user.password
-  )
+  const isMatch = bcrypt.compareSync(reqBody.password, user.password)
 
   if (!isMatch) {
     throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Invalid password')
@@ -94,10 +91,10 @@ const login = async (reqBody: any) => {
 }
 
 const refreshToken = async (clientRefreshToken: string) => {
-  const decoded = await JwtProvider.verifyToken(
+  const decoded = (await JwtProvider.verifyToken(
     clientRefreshToken,
     env.REFRESH_TOKEN_SECRET_SIGNATURE as string
-  ) as TokenPayload
+  )) as TokenPayload
 
   const payload = {
     user_id: decoded.user_id,

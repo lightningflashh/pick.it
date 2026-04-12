@@ -5,10 +5,25 @@ import { authMiddleware } from '~/middlewares/authMiddleware'
 import { rbacMiddleware } from '~/middlewares/rbacMiddleware'
 const Router = express.Router()
 
-Router.post('/', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission([RoleType.ADMIN]), categoryController.createNew)
+Router.post(
+  '/',
+  authMiddleware.isAuthorized,
+  rbacMiddleware.isValidPermission([RoleType.ADMIN]),
+  categoryController.createNew
+)
 Router.get('/', categoryController.getAll)
 Router.get('/:id', categoryController.getById)
-Router.put('/:id', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission([RoleType.ADMIN]), categoryController.update)
-Router.delete('/:id', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission([RoleType.ADMIN]), categoryController.remove)
+Router.put(
+  '/:id',
+  authMiddleware.isAuthorized,
+  rbacMiddleware.isValidPermission([RoleType.ADMIN]),
+  categoryController.update
+)
+Router.delete(
+  '/:id',
+  authMiddleware.isAuthorized,
+  rbacMiddleware.isValidPermission([RoleType.ADMIN]),
+  categoryController.remove
+)
 
 export const categoryRoute = Router

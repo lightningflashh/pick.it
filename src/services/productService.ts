@@ -53,16 +53,7 @@ const update = async (data: any) => {
 }
 
 const findAll = async (params: QueryParams) => {
-  const {
-    page = 1,
-    limit = 10,
-    name,
-    status,
-    slug,
-    brand,
-    sortBy = 'created_at',
-    order = 'DESC'
-  } = params
+  const { page = 1, limit = 10, name, status, slug, brand, sortBy = 'created_at', order = 'DESC' } = params
 
   const skip = (page - 1) * limit
 

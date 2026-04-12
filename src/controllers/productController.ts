@@ -16,37 +16,17 @@ const createNew = async (req: Request, res: Response, next: NextFunction) => {
 
 const findAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {
-      page,
-      limit,
-      name,
-      status,
-      slug,
-      brand,
-      sortBy,
-      order
-    } = req.query
+    const { page, limit, name, status, slug, brand, sortBy, order } = req.query
 
     const result = await productService.findAll({
       page: Number(page) > 0 ? Number(page) : 1,
       limit: Number(limit) > 0 ? Number(limit) : 10,
       name: typeof name === 'string' ? name : undefined,
-      status:
-        typeof status === 'string'
-          ? status === 'true'
-          : undefined,
-      slug:
-        typeof slug === 'string' ? slug : undefined,
-      brand:
-        typeof brand === 'string' ? brand : undefined,
-      sortBy:
-        sortBy === 'name' || sortBy === 'created_at'
-          ? sortBy
-          : 'created_at',
-      order:
-        order === 'ASC' || order === 'DESC'
-          ? order
-          : 'DESC'
+      status: typeof status === 'string' ? status === 'true' : undefined,
+      slug: typeof slug === 'string' ? slug : undefined,
+      brand: typeof brand === 'string' ? brand : undefined,
+      sortBy: sortBy === 'name' || sortBy === 'created_at' ? sortBy : 'created_at',
+      order: order === 'ASC' || order === 'DESC' ? order : 'DESC'
     })
 
     return res.json({
@@ -57,7 +37,6 @@ const findAll = async (req: Request, res: Response, next: NextFunction) => {
     next(error)
   }
 }
-
 
 const findById = async (req: Request, res: Response, next: NextFunction) => {
   try {

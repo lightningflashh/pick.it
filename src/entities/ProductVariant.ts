@@ -1,18 +1,13 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  Index,
-  JoinColumn
-} from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index, JoinColumn } from 'typeorm'
 import { Product } from '~/entities/Product'
 import { Color } from '~/entities/Color'
 import { Size } from '~/entities/Size'
 import { Base } from '~/entities/Base'
 
 @Entity()
-@Index(['product', 'color', 'size'])
+@Index(['product', 'color', 'size'], { unique: true })
+@Index(['color'])
+@Index(['size'])
 export class ProductVariant extends Base {
   @PrimaryGeneratedColumn('uuid')
   variant_id!: string

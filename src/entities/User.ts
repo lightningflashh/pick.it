@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
-  OneToOne,
-  Index,
-} from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, Index } from 'typeorm'
 import { RoleType } from '~/entities/role.enum'
 import { Order } from '~/entities/Order'
 import { Cart } from '~/entities/Cart'

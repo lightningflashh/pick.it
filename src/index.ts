@@ -31,20 +31,18 @@ const START_SERVER = () => {
     )
   })
 }
-  ; (async () => {
-    try {
-      // connect PostgreSQL
-      await CONNECT_POSTGRESQL_DB()
-      console.log('PostgreSQL connected successfully')
+;(async () => {
+  try {
+    await CONNECT_POSTGRESQL_DB()
+    console.log('PostgreSQL connected successfully')
 
-      // connect MongoDB (review)
-      await CONNECT_DB()
-      console.log('MongoDB connected successfully')
+    await CONNECT_DB()
+    console.log('MongoDB connected successfully')
 
-      START_SERVER()
-      console.log('Server started successfully')
-    } catch (error) {
-      console.error('Failed to connect to the database:', error)
-      process.exit(1)
-    }
-  })()
+    START_SERVER()
+    console.log('Server started successfully')
+  } catch (error) {
+    console.error('Failed to connect to the database:', error)
+    process.exit(1)
+  }
+})()

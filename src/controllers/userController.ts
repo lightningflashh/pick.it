@@ -25,14 +25,14 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('5 minutes')
+      maxAge: ms('14 days')
     })
 
     res.cookie('refreshToken', user.refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('5 minutes')
+      maxAge: ms('14 days')
     })
 
     return res.status(StatusCodes.OK).json({

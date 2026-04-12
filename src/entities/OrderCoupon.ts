@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  Index,
-  JoinColumn
-} from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index, JoinColumn } from 'typeorm'
 import { Coupon } from '~/entities/Coupon'
 import { Order } from '~/entities/Order'
 import { Base } from '~/entities/Base'
