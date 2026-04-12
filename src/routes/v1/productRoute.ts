@@ -2,6 +2,7 @@ import express from 'express'
 import { productController } from '~/controllers/productController'
 import { CreateProductDto } from '~/dto/CreateProductDto'
 import { UpdateProductDto } from '~/dto/UpdateProductDto'
+import { authMiddleware } from '~/middlewares/authMiddleware'
 import { validateDto } from '~/validation/ValidateDto'
 
 const Router = express.Router()

@@ -5,8 +5,6 @@ import {
   OneToMany,
   OneToOne,
   Index,
-  UpdateDateColumn,
-  CreateDateColumn
 } from 'typeorm'
 import { RoleType } from '~/entities/role.enum'
 import { Order } from '~/entities/Order'
