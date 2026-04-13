@@ -6,6 +6,12 @@ import bcrypt from 'bcryptjs'
 import { JwtProvider } from '~/providers/JwtProvider'
 import { env } from '~/config/environment'
 import { TokenPayload } from '~/types/Auth/tokenPayload'
+import { v4 as uuidv4 } from 'uuid'
+import { MailerSendProvider } from '~/providers/MailerSendProvider'
+import { WEBSITE_DOMAIN } from '~/utils/constants'
+import { RoleType } from '~/entities/role.enum'
+import { pickUser } from '~/utils/formatters'
+import { VerifyAccountDto } from '~/dto/VerifyAccountDto'
 
 const getRepo = () => GET_POSTGRESQL_DB().getRepository(User)
 
@@ -26,19 +32,52 @@ const createNew = async (reqBody: any) => {
     full_name: reqBody.full_name,
     phone: reqBody.phone,
     address: reqBody.address,
-    is_active: true
+    is_active: false,
+    role: RoleType.USER,
+    verify_token: uuidv4()
   })
 
   const savedUser = await repo.save(newUser)
 
-  return {
-    user_id: savedUser.user_id,
-    email: savedUser.email,
-    full_name: savedUser.full_name,
-    phone: savedUser.phone,
-    address: savedUser.address,
-    role: savedUser.role
-  }
+  const getNewUser = await repo.findOneBy({
+    user_id: savedUser.user_id
+  })
+
+  const verificationUrl = `${WEBSITE_DOMAIN}/account/verification?email=${getNewUser?.email}&token=${getNewUser?.verify_token}`
+  const customSubject = 'Pick!t: Please verify your account'
+  const htmlContent = `
+        <h1>Welcome to Pick!t</h1>
+        <p>To complete your registration, please verify your account by clicking the link below:</p>
+        <a href="${verificationUrl}">Verify Account</a>
+      `
+  await MailerSendProvider.sendEmail({
+    to: getNewUser?.email as string,
+    toName: getNewUser?.full_name as string,
+    subject: customSubject,
+    html: htmlContent
+  })
+
+  return pickUser(getNewUser)
+}
+
+const verifyAccount = async (reqBody: VerifyAccountDto) => {
+  const repo = getRepo()
+
+  const existingUser = await repo.findOneBy({
+    email: reqBody.email
+  })
+
+  if (!existingUser) throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+  if (existingUser.is_active) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Account already verified')
+  if (reqBody.token !== existingUser.verify_token) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid verification token')
+
+  const updatedUser = await repo.update(existingUser.user_id, {
+    is_active: true,
+    verify_token: ''
+  })
+
+  return pickUser(updatedUser)
+
 }
 
 const login = async (reqBody: any) => {
@@ -68,13 +107,13 @@ const login = async (reqBody: any) => {
     role: user.role
   }
 
-  const accessToken = await JwtProvider.generateToken(
+  const accessToken = JwtProvider.generateToken(
     payload,
     env.ACCESS_TOKEN_SECRET_SIGNATURE as string,
     env.ACCESS_TOKEN_LIFE as string
   )
 
-  const refreshToken = await JwtProvider.generateToken(
+  const refreshToken = JwtProvider.generateToken(
     payload,
     env.REFRESH_TOKEN_SECRET_SIGNATURE as string,
     env.REFRESH_TOKEN_LIFE as string
@@ -102,7 +141,7 @@ const refreshToken = async (clientRefreshToken: string) => {
     role: decoded.role
   }
 
-  const accessToken = await JwtProvider.generateToken(
+  const accessToken = JwtProvider.generateToken(
     payload,
     env.ACCESS_TOKEN_SECRET_SIGNATURE as string,
     env.ACCESS_TOKEN_LIFE as string
@@ -114,5 +153,6 @@ const refreshToken = async (clientRefreshToken: string) => {
 export const userService = {
   createNew,
   login,
-  refreshToken
+  refreshToken,
+  verifyAccount
 }

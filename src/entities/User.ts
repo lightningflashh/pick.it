@@ -28,6 +28,9 @@ export class User extends Base {
   @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
   role!: RoleType
 
+  @Column({ nullable: true, type: 'varchar', length: 255 })
+  verify_token?: string
+
   @Column({ default: true, type: 'boolean' })
   is_active?: boolean
 
