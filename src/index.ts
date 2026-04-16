@@ -1,13 +1,15 @@
 import 'reflect-metadata'
 import express from 'express'
+import cors from 'cors'
 import { env } from '~/config/environment'
 
 import { CONNECT_POSTGRESQL_DB } from '~/config/postgresql'
 import { CONNECT_DB } from '~/config/mongodb'
 
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
-import { APIs_V1 } from './routes/v1'
+import { APIs_V1 } from '~/routes/v1'
 import cookieParser from 'cookie-parser'
+import { corsOptions } from '~/config/cors'
 
 const app = express()
 
@@ -18,9 +20,11 @@ app.use((req, res, next) => {
 
 app.use(cookieParser())
 
+app.use(cors(corsOptions))
+
 app.use(express.json())
 
-app.use('/api/v1', APIs_V1)
+app.use('/v1', APIs_V1)
 
 app.use(errorHandlingMiddleware)
 
@@ -31,18 +35,18 @@ const START_SERVER = () => {
     )
   })
 }
-;(async () => {
-  try {
-    await CONNECT_POSTGRESQL_DB()
-    console.log('PostgreSQL connected successfully')
+  ; (async () => {
+    try {
+      await CONNECT_POSTGRESQL_DB()
+      console.log('PostgreSQL connected successfully')
 
-    await CONNECT_DB()
-    console.log('MongoDB connected successfully')
+      await CONNECT_DB()
+      console.log('MongoDB connected successfully')
 
-    START_SERVER()
-    console.log('Server started successfully')
-  } catch (error) {
-    console.error('Failed to connect to the database:', error)
-    process.exit(1)
-  }
-})()
+      START_SERVER()
+      console.log('Server started successfully')
+    } catch (error) {
+      console.error('Failed to connect to the database:', error)
+      process.exit(1)
+    }
+  })()

@@ -12,8 +12,10 @@ import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { RoleType } from '~/entities/role.enum'
 import { pickUser } from '~/utils/formatters'
 import { VerifyAccountDto } from '~/dto/VerifyAccountDto'
+import { Cart } from '~/entities/Cart'
 
 const getRepo = () => GET_POSTGRESQL_DB().getRepository(User)
+const getCartRepo = () => GET_POSTGRESQL_DB().getRepository(Cart)
 
 const createNew = async (reqBody: any) => {
   const repo = getRepo()
@@ -38,6 +40,13 @@ const createNew = async (reqBody: any) => {
   })
 
   const savedUser = await repo.save(newUser)
+
+  const cartRepo = getCartRepo()
+  const cart = cartRepo.create({
+    user: savedUser
+  })
+
+  await cartRepo.save(cart)
 
   const getNewUser = await repo.findOneBy({
     user_id: savedUser.user_id
@@ -69,7 +78,8 @@ const verifyAccount = async (reqBody: VerifyAccountDto) => {
 
   if (!existingUser) throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
   if (existingUser.is_active) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Account already verified')
-  if (reqBody.token !== existingUser.verify_token) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid verification token')
+  if (reqBody.token !== existingUser.verify_token)
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid verification token')
 
   const updatedUser = await repo.update(existingUser.user_id, {
     is_active: true,
@@ -77,7 +87,6 @@ const verifyAccount = async (reqBody: VerifyAccountDto) => {
   })
 
   return pickUser(updatedUser)
-
 }
 
 const login = async (reqBody: any) => {

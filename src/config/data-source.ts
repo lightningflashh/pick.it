@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
   type: 'postgres',
   url: env.POSTGRES_URI,
 
-  synchronize: false,
+  synchronize: true,
   logging: false,
 
   entities: [

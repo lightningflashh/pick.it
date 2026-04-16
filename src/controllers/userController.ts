@@ -21,7 +21,9 @@ const verifyAccount = async (req: Request, res: Response, next: NextFunction) =>
   try {
     const result = await userService.verifyAccount(req.body)
     return res.status(StatusCodes.OK).json(result)
-  } catch (error) { next(error) }
+  } catch (error) {
+    next(error)
+  }
 }
 
 const login = async (req: Request, res: Response, next: NextFunction) => {

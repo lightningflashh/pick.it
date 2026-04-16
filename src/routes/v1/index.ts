@@ -5,6 +5,7 @@ import { userRoute } from '~/routes/v1/userRoute'
 import { colorRoute } from '~/routes/v1/colorRoute'
 import { sizeRoute } from '~/routes/v1/sizeRoute'
 import { productVariantRoute } from '~/routes/v1/productVariantRoute'
+import { cartRoute } from '~/routes/v1/cartRoute'
 
 const Router = express.Router()
 
@@ -16,5 +17,6 @@ Router.use('/categories', categoryRoute)
 Router.use('/colors', colorRoute)
 Router.use('/sizes', sizeRoute)
 Router.use('/variants', productVariantRoute)
+Router.use('/carts', cartRoute)
 
 export const APIs_V1 = Router
