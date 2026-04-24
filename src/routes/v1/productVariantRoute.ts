@@ -17,6 +17,7 @@ Router.post(
   productVariantController.createNew
 )
 Router.get('/', productVariantController.findAll)
+Router.get('/product/:product_id', productVariantController.findByProductId)
 Router.get('/:id', productVariantController.findById)
 Router.put(
   '/:id',

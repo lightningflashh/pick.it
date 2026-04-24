@@ -38,31 +38,8 @@ const getOrCreateCartByUserId = async (userId: string) => {
 
 const getMyCart = async (userId: string) => {
   const cart = await cartRepo().findOne({
-    select: {
-      cart_id: true,
-      items: {
-        quantity: true,
-        price_at_time: true,
-        created_at: true,
-        variant: {
-          variant_id: true,
-          product: {
-            product_id: true,
-            name: true,
-            short_description: true
-          },
-          color: {
-            name: true
-          },
-          size: {
-            name: true
-          }
-        }
-      }
-    },
     where: { user: { user_id: userId } },
     relations: {
-      user: false,
       items: {
         variant: {
           product: true,
@@ -79,15 +56,24 @@ const getMyCart = async (userId: string) => {
   })
 
   if (!cart) {
-    const createdCart = await getOrCreateCartByUserId(userId)
-
     return {
-      ...createdCart,
+      cart_id: null,
       items: []
     }
   }
 
-  return cart
+  return {
+    cart_id: cart.cart_id,
+    items: cart.items.map((item) => ({
+      cart_item_id: item.cart_item_id,
+      quantity: item.quantity,
+      variant_id: item.variant.variant_id,
+      product_name: item.variant.product.name,
+      price: item.variant.price,
+      size: item.variant.size?.name,
+      color: item.variant.color?.name
+    }))
+  }
 }
 
 const addProductToCart = async (userId: string, data: { variant_id: string; quantity: number }) => {

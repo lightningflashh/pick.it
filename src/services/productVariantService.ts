@@ -114,6 +114,24 @@ const findById = async (id: string) => {
   })
 }
 
+const findByProductId = async (product_id: string) => {
+  const product = await productRepo().findOneBy({ product_id })
+  if (!product) {
+    throw new Error('PRODUCT_NOT_FOUND')
+  }
+
+  return await variantRepo().find({
+    where: {
+      product: { product_id }
+    },
+    relations: {
+      product: true,
+      color: true,
+      size: true
+    }
+  })
+}
+
 const update = async (data: any) => {
   const variant = await variantRepo().findOne({
     where: { variant_id: data.variant_id },
@@ -176,6 +194,7 @@ export const productVariantService = {
   create,
   findAll,
   findById,
+  findByProductId,
   update,
   remove
 }

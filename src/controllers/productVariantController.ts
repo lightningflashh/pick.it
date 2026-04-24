@@ -56,6 +56,19 @@ const findById = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const findByProductId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await productVariantService.findByProductId(req.params.product_id as string)
+
+    return res.status(StatusCodes.OK).json({
+      message: 'Get product variants by product id success',
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 const update = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = {
@@ -90,6 +103,7 @@ export const productVariantController = {
   createNew,
   findAll,
   findById,
+  findByProductId,
   update,
   remove
 }
