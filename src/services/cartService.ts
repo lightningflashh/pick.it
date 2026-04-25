@@ -36,7 +36,7 @@ const getOrCreateCartByUserId = async (userId: string) => {
   return await cartRepo().save(cart)
 }
 
-const getMyCart = async (userId: string) => {
+const getMyCart = async (userId: string, page: number = 1, pageSize: number = 10) => {
   const cart = await cartRepo().findOne({
     where: { user: { user_id: userId } },
     relations: {
@@ -58,21 +58,43 @@ const getMyCart = async (userId: string) => {
   if (!cart) {
     return {
       cart_id: null,
-      items: []
+      items: [],
+      meta: {
+        total: 0,
+        uniqueVariants: 0,
+        page: 1,
+        pageSize,
+        totalPages: 0
+      }
     }
   }
 
+  const allItems = cart.items.map((item) => ({
+    cart_item_id: item.cart_item_id,
+    quantity: item.quantity,
+    variant_id: item.variant.variant_id,
+    product_name: item.variant.product.name,
+    price: item.variant.price,
+    size: item.variant.size?.name,
+    color: item.variant.color?.name
+  }))
+
+  const uniqueVariants = new Set(allItems.map((item) => item.variant_id)).size
+  const total = allItems.length
+  const totalPages = Math.ceil(total / pageSize)
+  const startIndex = (page - 1) * pageSize
+  const paginatedItems = allItems.slice(startIndex, startIndex + pageSize)
+
   return {
     cart_id: cart.cart_id,
-    items: cart.items.map((item) => ({
-      cart_item_id: item.cart_item_id,
-      quantity: item.quantity,
-      variant_id: item.variant.variant_id,
-      product_name: item.variant.product.name,
-      price: item.variant.price,
-      size: item.variant.size?.name,
-      color: item.variant.color?.name
-    }))
+    items: paginatedItems,
+    meta: {
+      total,
+      uniqueVariants,
+      page,
+      pageSize,
+      totalPages
+    }
   }
 }
 
