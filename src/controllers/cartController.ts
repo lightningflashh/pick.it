@@ -24,10 +24,11 @@ const getMyCart = async (req: Request, res: Response, next: NextFunction) => {
 const addProductToCart = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req)
-    await cartService.addProductToCart(userId, req.body)
+    const result = await cartService.addProductToCart(userId, req.body)
 
     return res.status(StatusCodes.OK).json({
-      message: 'Add product to cart success'
+      message: 'Add product to cart success',
+      data: result
     })
   } catch (error) {
     next(error)
@@ -37,10 +38,11 @@ const addProductToCart = async (req: Request, res: Response, next: NextFunction)
 const removeProductFromCart = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req)
-    await cartService.removeProductFromCart(userId, req.params.variant_id as string)
+    const result = await cartService.removeProductFromCart(userId, req.params.variant_id as string)
 
     return res.status(StatusCodes.OK).json({
-      message: 'Remove product from cart success'
+      message: 'Remove product from cart success',
+      data: result
     })
   } catch (error) {
     next(error)

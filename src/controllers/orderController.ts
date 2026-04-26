@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { orderService } from '~/services/orderService'
+import { paymentService } from '~/services/paymentService'
 import ApiError from '~/utils/ApiError'
 
 const getUserId = (req: Request) => (req as any).jwtDecoded?.user_id as string
@@ -107,11 +108,47 @@ const remove = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const createPaymentUrl = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return paymentService.createPaymentUrl(req, res)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const handleVnpayReturn = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return paymentService.handleVnpayReturn(req, res)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const handleVnpayIpn = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return paymentService.handleVnpayIpn(req, res)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const queryDr = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return await paymentService.queryDr(req, res)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const orderController = {
   createNew,
   findAll,
   findById,
   findByUserId,
   update,
-  remove
+  remove,
+  createPaymentUrl,
+  handleVnpayReturn,
+  handleVnpayIpn,
+  queryDr
 }

@@ -46,6 +46,13 @@ Pick!t Backend is a full-featured e-commerce API that provides:
 - Coupon validation and expiry handling
 - Remaining usage tracking
 
+**Payment Integration**
+- VNPAY payment gateway integration
+- Secure payment URL generation
+- IPN (Instant Payment Notification) handling
+- Payment status query and reconciliation (DR)
+- Support for multiple payment methods
+
 **Core Features**
 - PostgreSQL for relational data persistence
 - MongoDB integration for flexible document storage
@@ -102,6 +109,14 @@ Pick!t Backend is a full-featured e-commerce API that provides:
 - Coupon application at checkout
 - Automatic usage tracking
 
+**Payment Processing**
+- VNPAY payment gateway integration
+- Multiple payment methods (bank transfer, card, wallet)
+- Secure payment URL generation with HMAC signature
+- Payment status tracking and reconciliation
+- IPN webhook handling for transaction confirmation
+- Transaction query and monitoring
+
 **API Features**
 - RESTful API design
 - Comprehensive pagination support
@@ -141,7 +156,8 @@ src/
 │   ├── productVariantController.ts
 │   ├── cartController.ts
 │   ├── orderController.ts
-│   └── couponController.ts
+│   ├── couponController.ts
+│   └── orderController.ts (includes payment methods)
 ├── services/              # Business logic
 │   ├── userService.ts
 │   ├── productService.ts
@@ -151,7 +167,8 @@ src/
 │   ├── productVariantService.ts
 │   ├── cartService.ts
 │   ├── orderService.ts
-│   └── couponService.ts
+│   ├── couponService.ts
+│   └── paymentService.ts
 ├── entities/              # TypeORM entities
 │   ├── Base.ts           # Base entity with timestamps
 │   ├── User.ts
@@ -248,6 +265,16 @@ ADMIN_SENDER_NAME=Pickit
 MAILER_SEND_API_KEY=your_mailersend_api_key
 ```
 
+### Payment Configuration (VNPAY)
+
+```env
+VNPAY_TMNCODE=your_terminal_code          # Terminal code from VNPAY
+VNPAY_HASHSECRET=your_hash_secret         # Hash secret key from VNPAY
+VNPAY_URL=https://sandbox.vnpayment.vn/paygate/pay   # VNPAY payment gateway URL
+VNPAY_RETURNURL=http://localhost:3000/payment-return  # Return URL after payment
+VNPAY_API=https://api.vnpayment.vn/merchant_webapi/api/transaction  # VNPAY API endpoint
+```
+
 ### Example .env File
 
 ```env
@@ -276,6 +303,13 @@ REFRESH_TOKEN_LIFE=14 days
 ADMIN_SENDER_EMAIL=noreply@pickit.com
 ADMIN_SENDER_NAME=Pickit Store
 MAILER_SEND_API_KEY=your_mailersend_api_key
+
+# Payment (VNPAY)
+VNPAY_TMNCODE=1234567890
+VNPAY_HASHSECRET=your_vnpay_hash_secret
+VNPAY_URL=https://sandbox.vnpayment.vn/paygate/pay
+VNPAY_RETURNURL=http://localhost:8017/payment-return
+VNPAY_API=https://api.vnpayment.vn/merchant_webapi/api/transaction
 ```
 
 ## Installation & Setup
@@ -669,6 +703,63 @@ page=1&limit=10&name=keyword&status=true&sortBy=created_at&order=DESC
 }
 ```
 
+#### 💳 Payment (VNPAY)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/orders/payment/create-payment-url` | ✓ | Generate VNPAY payment URL |
+| GET | `/orders/payment/vnpay-return` | x | VNPAY return callback |
+| POST | `/orders/payment/vnpay-ipn` | x | VNPAY IPN webhook |
+| POST | `/orders/payment/query-dr` | ✓ | Query payment status |
+
+**Create Payment URL Payload:**
+```json
+{
+  "amount": 100000,
+  "bankCode": "NCB",
+  "language": "vn"
+}
+```
+
+**Parameters:**
+- `amount` (required): Payment amount in VND (integer)
+- `bankCode` (optional): Bank code for specific bank payment. Leave empty to show all banks
+  - Common codes: `NCB`, `AGRIBANK`, `SACOMBANK`, `SHB`, `BIDV`, `VIETINBANK`, `VIETCOMBANK`, `EXIMBANK`
+- `language` (optional): UI language - `vn` or `en` (default: `vn`)
+
+**Response:**
+Redirects to VNPAY payment gateway (HTTP 301/302)
+
+**Query Payment Status Payload:**
+```json
+{
+  "orderId": "123456",
+  "transDate": "20260426"
+}
+```
+
+**Parameters:**
+- `orderId` (required): Your order ID from payment URL creation
+- `transDate` (required): Transaction date in format YYYYMMDD
+
+**Query Payment Response:**
+```json
+{
+  "vnp_ResponseCode": "00",
+  "vnp_TransactionStatus": "00",
+  "vnp_Amount": 100000,
+  "vnp_BankCode": "NCB",
+  "vnp_TransactionDate": "20260426141530"
+}
+```
+
+**Response Codes:**
+- `00` - Success / Payment received
+- `01` - Bank maintenance
+- `02` - Card/Account issue
+- `97` - Invalid checksum/signature
+- `99` - Other errors
+
 ### Query Parameters
 
 Most GET endpoints support:
@@ -717,6 +808,29 @@ Token Expires? → Refresh Token → New Access Token
        ↓
 Logout (Clear Cookies)
 ```
+
+## Testing Guide
+
+For comprehensive testing instructions including order flow and payment testing, see [POSTMAN_TESTING_GUIDE.md](POSTMAN_TESTING_GUIDE.md).
+
+### Quick Payment Testing in Postman
+
+1. **Setup Environment** - Configure Postman environment with `base_url`, `user_id`, and `access_token`
+
+2. **Create Payment URL:**
+   ```
+   POST {{base_url}}/orders/payment/create-payment-url
+   Body: { "amount": 100000, "bankCode": "", "language": "vn" }
+   ```
+
+3. **Query Payment Status:**
+   ```
+   POST {{base_url}}/orders/payment/query-dr
+   Body: { "orderId": "123456", "transDate": "20260426" }
+   ```
+
+4. **VNPAY Simulation** - Use VNPAY sandbox environment to test payments without real transactions
+
 ---
 
 ## Support & Contributing

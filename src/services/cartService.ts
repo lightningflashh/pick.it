@@ -17,7 +17,15 @@ const getOrCreateCartByUserId = async (userId: string) => {
   const user = await userRepo().findOne({
     where: { user_id: userId },
     relations: {
-      cart: true
+      cart: {
+        items: {
+          variant: {
+            product: true,
+            color: true,
+            size: true
+          }
+        }
+      }
     }
   })
 
@@ -25,15 +33,33 @@ const getOrCreateCartByUserId = async (userId: string) => {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
   }
 
-  if (user.cart) {
-    return user.cart
+  let cart = user.cart
+  if (!cart) {
+    cart = cartRepo().create({ user })
+    cart = await cartRepo().save(cart)
   }
 
-  const cart = cartRepo().create({
-    user
-  })
+  const allItems = cart.items.map((item) => ({
+    cart_item_id: item.cart_item_id,
+    quantity: item.quantity,
+    variant_id: item.variant.variant_id,
+    product_name: item.variant.product.name,
+    price: item.variant.price,
+    size: item.variant.size?.name,
+    color: item.variant.color?.name
+  }))
 
-  return await cartRepo().save(cart)
+  const uniqueVariants = new Set(allItems.map((item) => item.variant_id)).size
+  const total = allItems.length
+
+  return {
+    cart_id: cart.cart_id,
+    items: allItems,
+    meta: {
+      total,
+      uniqueVariants
+    }
+  }
 }
 
 const getMyCart = async (userId: string, page: number = 1, pageSize: number = 10) => {
@@ -140,22 +166,22 @@ const addProductToCart = async (userId: string, data: { variant_id: string; quan
   await cartItemRepo().save(
     cartItemRepo().create({
       ...(existingItem || {}),
-      cart,
+      cart: { cart_id: cart.cart_id },
       variant,
       quantity: nextQuantity,
       price_at_time: Number(variant.price)
     })
   )
 
-  return
+  return getMyCart(userId)
 }
 
 const removeProductFromCart = async (userId: string, variantId: string) => {
-  const cart = await getOrCreateCartByUserId(userId)
+  const cartData = await getOrCreateCartByUserId(userId)
 
   const item = await cartItemRepo().findOne({
     where: {
-      cart: { cart_id: cart.cart_id },
+      cart: { cart_id: cartData.cart_id },
       variant: { variant_id: variantId }
     },
     relations: {
@@ -170,7 +196,7 @@ const removeProductFromCart = async (userId: string, variantId: string) => {
 
   await cartItemRepo().remove(item)
 
-  return true
+  return getMyCart(userId)
 }
 
 export const cartService = {

@@ -2,3 +2,5 @@ node_modules/
 dist/
 
 .env
+
+POSTMAN_TESTING_GUIDE.md

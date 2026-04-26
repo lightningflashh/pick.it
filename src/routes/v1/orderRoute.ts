@@ -17,4 +17,10 @@ Router.get('/:id', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission
 Router.put('/:id', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission([RoleType.USER]), validateDto(UpdateOrderDto), orderController.update)
 Router.delete('/:id', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission([RoleType.ADMIN, RoleType.USER]), orderController.remove)
 
+// Payment routes
+Router.post('/payment/create-payment-url', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission([RoleType.USER]), orderController.createPaymentUrl)
+Router.get('/payment/vnpay-return', orderController.handleVnpayReturn)
+Router.post('/payment/vnpay-ipn', orderController.handleVnpayIpn)
+Router.post('/payment/query-dr', authMiddleware.isAuthorized, rbacMiddleware.isValidPermission([RoleType.USER]), orderController.queryDr)
+
 export const orderRoute = Router

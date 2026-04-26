@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { pick } from 'lodash'
 
 export const slugify = (val: any) => {
@@ -26,3 +27,18 @@ export const pickUser = (user: any) => {
     'updated_at'
   ])
 }
+
+
+export const sortObject = (obj: any) => {
+  const sorted: any = {}
+  const keys = Object.keys(obj)
+    .map(k => encodeURIComponent(k))
+    .sort()
+
+  keys.forEach(key => {
+    sorted[key] = encodeURIComponent(obj[key]).replace(/%20/g, '+')
+  })
+
+  return sorted
+}
+
