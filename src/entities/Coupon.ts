@@ -1,10 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index, UpdateDateColumn, CreateDateColumn } from 'typeorm'
-import { DiscountType } from '~/entities/discount-type.enum'
+import { DiscountType } from '~/entities/discountType.enum'
+import { Base } from '~/entities/Base'
 
 @Entity()
 @Index(['code'], { unique: true })
 @Index(['start_date', 'end_date'])
-export class Coupon {
+export class Coupon extends Base {
   @PrimaryGeneratedColumn()
   coupon_id!: number
 
@@ -46,17 +47,4 @@ export class Coupon {
 
   @Column({ nullable: true, type: 'text' })
   description?: string
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
-  })
-  created_at!: Date
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP'
-  })
-  updated_at!: Date
 }

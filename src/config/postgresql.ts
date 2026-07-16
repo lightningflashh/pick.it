@@ -1,73 +1,25 @@
-import 'reflect-metadata'
-import { DataSource } from 'typeorm'
-import { env } from '~/config/environment'
+import { AppDataSource } from '~/config/data-source'
 
-import { User } from '~/entities/User'
-import { Cart } from '~/entities/Cart'
-import { CartItem } from '~/entities/CartItem'
-import { Product } from '~/entities/Product'
-import { ProductVariant } from '~/entities/ProductVariant'
-import { Category } from '~/entities/Category'
-import { Color } from '~/entities/Color'
-import { Size } from '~/entities/Size'
-import { Order } from '~/entities/Order'
-import { OrderItem } from '~/entities/OrderItem'
-import { Coupon } from '~/entities/Coupon'
-import { OrderCoupon } from '~/entities/OrderCoupon'
+const instance = AppDataSource
 
-let AppDataSource: DataSource | null = null
-
-export const CONNECT_POSTGRESQL_DB = async (): Promise<DataSource> => {
-  if (AppDataSource && AppDataSource.isInitialized) {
-    return AppDataSource
-  }
-
-  try {
-    AppDataSource = new DataSource({
-      type: 'postgres',
-      url: env.POSTGRES_URI,
-
-      synchronize: false,
-      logging: false,
-
-      entities: [
-        User,
-        Cart,
-        CartItem,
-        Product,
-        ProductVariant,
-        Category,
-        Color,
-        Size,
-        Order,
-        OrderItem,
-        Coupon,
-        OrderCoupon
-      ],
-
-      migrations: ['src/migrations/*.ts']
-    })
-
-    await AppDataSource.initialize()
-
+export const CONNECT_POSTGRESQL_DB = async () => {
+  if (!instance.isInitialized) {
+    await instance.initialize()
     console.log('PostgreSQL connected')
-    return AppDataSource
-  } catch (error) {
-    console.error('Error connecting to PostgreSQL:', error)
-    throw error
   }
+  return instance
 }
 
-export const GET_POSTGRESQL_DB = (): DataSource => {
-  if (!AppDataSource || !AppDataSource.isInitialized) {
-    throw new Error('PostgreSQL not connected. Call CONNECT_POSTGRESQL_DB first.')
+export const GET_POSTGRESQL_DB = () => {
+  if (!instance.isInitialized) {
+    throw new Error('DB not connected')
   }
-  return AppDataSource
+  return instance
 }
 
 export const CLOSE_POSTGRESQL_DB = async () => {
-  if (AppDataSource && AppDataSource.isInitialized) {
-    await AppDataSource.destroy()
+  if (instance.isInitialized) {
+    await instance.destroy()
     console.log('PostgreSQL disconnected')
   }
 }

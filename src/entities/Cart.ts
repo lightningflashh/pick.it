@@ -1,9 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm'
 import { User } from '~/entities/User'
 import { CartItem } from '~/entities/CartItem'
+import { Base } from '~/entities/Base'
 
 @Entity()
-export class Cart {
+export class Cart extends Base {
   @PrimaryGeneratedColumn('uuid')
   cart_id!: string
 

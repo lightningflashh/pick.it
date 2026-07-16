@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
 import { ProductVariant } from '~/entities/ProductVariant'
+import { Base } from '~/entities/Base'
 @Entity()
-export class Color {
+export class Color extends Base {
   @PrimaryGeneratedColumn()
   color_id!: number
 

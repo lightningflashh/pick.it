@@ -6,9 +6,9 @@ services:
     container_name: pickit-postgres
     restart: always
     environment:
-      POSTGRES_USER: pickit
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: pickit_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - '5432:5432'
     volumes:
@@ -19,8 +19,8 @@ services:
     container_name: pickit-mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - '27017:27017'
     volumes:

@@ -1,11 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index, JoinColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index, JoinColumn } from 'typeorm'
 import { Product } from '~/entities/Product'
 import { Color } from '~/entities/Color'
 import { Size } from '~/entities/Size'
+import { Base } from '~/entities/Base'
 
 @Entity()
-@Index(['product', 'color', 'size'])
-export class ProductVariant {
+@Index(['product', 'color', 'size'], { unique: true })
+@Index(['color'])
+@Index(['size'])
+export class ProductVariant extends Base {
   @PrimaryGeneratedColumn('uuid')
   variant_id!: string
 
@@ -26,17 +29,4 @@ export class ProductVariant {
 
   @Column('decimal', { precision: 10, scale: 2 })
   price!: number
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
-  })
-  created_at!: Date
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP'
-  })
-  updated_at!: Date
 }

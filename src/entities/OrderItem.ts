@@ -1,12 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index, JoinColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index, JoinColumn } from 'typeorm'
 import { Order } from '~/entities/Order'
 import { ProductVariant } from '~/entities/ProductVariant'
+import { Base } from '~/entities/Base'
 
 @Entity()
 @Index(['order'])
 @Index(['variant'])
 @Index(['order', 'variant'])
-export class OrderItem {
+export class OrderItem extends Base {
   @PrimaryGeneratedColumn('uuid')
   order_item_id!: string
 
@@ -32,17 +33,4 @@ export class OrderItem {
 
   @Column({ type: 'varchar', length: 255 })
   color_name!: string
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP'
-  })
-  created_at!: Date
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP'
-  })
-  updated_at!: Date
 }
